@@ -4,3 +4,4 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 a=1
+b = 2
