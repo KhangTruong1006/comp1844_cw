@@ -25,12 +25,11 @@ class TubeMap():
             edges.append((lineStaions[i],lineStaions[i+1]))
         return edges
     
-    def generatePosition(self,direction_list):
+    def generatePosition(self,direction_list,start_pos= (0,0)):
         pos = []
-        x,y = 0, 0
         for direction in direction_list:
             if direction == "Start":
-                x,y = 0,0
+                x,y = start_pos
 
             elif direction == "N":
                 x,y = x, y+ self.distance
