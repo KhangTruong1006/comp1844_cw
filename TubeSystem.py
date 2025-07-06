@@ -6,6 +6,11 @@ class LineStation(TubeSystem):
     def __init__(self):
         self.piccadilly = ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"]
 
+class StationNamePosition(TubeSystem):
+    def __init__(self):
+        # Top - Top Right - Right - Bottom Right - Bottom - Bottom Left - Left - Top Left
+        self.piccadilly = ["r","t","t","b","r","l"]
+
 class LineColor(TubeSystem):
     def __init__(self):
         self.piccadilly = ["blue","Picaddilly"]
@@ -18,4 +23,5 @@ class Direction(TubeSystem):
 
 class StationDistance(TubeSystem):
     def __init__(self):
-        self.piccadilly = ["a","b","c","d","e"]
+        # In kilometres
+        self.piccadilly = [0.81,0.7,0.45,0.33,0.6]
