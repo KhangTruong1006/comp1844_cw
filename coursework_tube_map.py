@@ -15,6 +15,7 @@ class TubeMap():
         self.direction = TubeSystem.Direction()
         self.lineColor = TubeSystem.LineColor()
         self.stationDistance = TubeSystem.StationDistance()
+        self.namePosition = TubeSystem.StationNamePosition()
 
         self.angle = np.radians(self.settings.angle)
         self.distance = self.settings.distance
@@ -39,6 +40,14 @@ class TubeMap():
             else:
                 edge_colors.append("gray")
         return edge_colors
+    
+    def generateEdgeLabel(self,lineStations,distanceList):
+        edges = self.createEdges(lineStations)
+        labels = {}
+        for i, edge in enumerate(edges):
+            labels[edge] = distanceList[i]
+
+        return labels
 
     # Position generator functions
     def generatePosition(self,direction_list,start_pos= (0,0)):
@@ -95,33 +104,77 @@ class TubeMap():
         return node_color_list
     
     # Others
-    def labelStationNames(self,lineStations, linePos):
-        for station in lineStations:
+    def labelStationNames(self,lineStations, linePos,placementList):
+        for i,station in enumerate(lineStations):
             (x,y) = linePos[station]
-            plt.text(x - 1, y + 0.2 , station, ha= 'center', va='bottom',fontsize = self.settings.fontSize)
-    
+            placement= placementList[i]
+            self.setLabelOffset(station,x,y,placement)
+            
+    def setLabelOffset(self,station,x,y,placement):
+        if placement == "t":
+            x,y = x, y + self.settings.label_y_offset
+            plt.text(x, y, station, ha= 'center', va='bottom',fontsize = self.settings.fontSize)
+        
+        elif placement == "tr":
+            x,y = x + self.settings.label_x_offset, y + self.settings.label_y_offset
+            plt.text(x, y, station, ha= 'left', va='bottom',fontsize = self.settings.fontSize)
+
+        elif placement == "r":
+            x,y = x + self.settings.label_x_offset, y 
+            plt.text(x, y, station, ha= 'left', va='center',fontsize = self.settings.fontSize)
+        
+        elif placement == "br":
+            x,y = x + self.settings.label_x_offset, y - self.settings.label_y_offset
+            plt.text(x, y, station, ha= 'left', va='bottom',fontsize = self.settings.fontSize)
+
+        elif placement == "b":
+            x,y = x , y -self.settings.label_y_offset
+            plt.text(x, y, station, ha= 'center', va='top',fontsize = self.settings.fontSize)
+
+        elif placement == "bl":
+            x,y = x - self.settings.label_x_offset, y - self.settings.label_y_offset
+            plt.text(x, y, station, ha= 'right', va='bottom',fontsize = self.settings.fontSize)
+
+        elif placement == "l":
+            x,y = x - self.settings.label_x_offset, y
+            plt.text(x, y, station, ha= 'right', va='center',fontsize = self.settings.fontSize)
+
+        elif placement == "tl":
+            x,y = x - self.settings.label_x_offset, y + self.settings.label_y_offset
+            plt.text(x, y, station, ha= 'right', va='bottom',fontsize = self.settings.fontSize)
+
     """Graph"""
-    def createLine(self,lineStations,lineDirection,lineColor):
+    def createLine(self,lineStations,lineDirection,lineColor,namePlacementList,distanceList):
         line_edges = self.createEdges(lineStations)
         self.tubeGraph.add_edges_from(line_edges)
         pos = self.generateStationPosition(lineStations,lineDirection)
         stationColorList = self.generateNodeColorList(lineStations,lineColor)
-        self.labelStationNames(lineStations,pos)
-
-        return (pos,stationColorList)
+        self.labelStationNames(lineStations,pos,namePlacementList)
+        labels = self.generateEdgeLabel(lineStations,distanceList)
+        return (pos,stationColorList,labels)
     
 
-    def drawTubeMap(self):  
-        pos, nodeColorList = self.createLine(self.lineStations.piccadilly,self.direction.piccailly,self.lineColor.piccadilly)
+    def drawTubeMap(self,figsize = (10,7)):
+        plt.figure(figsize=figsize)  
+        pos, nodeColorList,labels = self.createLine(self.lineStations.piccadilly,
+                                             self.direction.piccailly,
+                                             self.lineColor.piccadilly,
+                                             self.namePosition.piccadilly,
+                                             self.stationDistance.piccadilly)
+        
         edge_colors = self.generateEdgeColor(self.lineStations.piccadilly)
+        
         nx.draw(self.tubeGraph, 
                 pos, 
                 node_color= nodeColorList,
                 edge_color = edge_colors)
+        
+        nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=labels)
 
+        
         self.generateLineColorLegend()
-        plt.title('London Tube Map')
-        plt.legend(loc = "lower right")
+        plt.title(self.settings.digram_name)
+        plt.legend(title = self.settings.legend_title,loc = "lower right")
         plt.show()
 
 
