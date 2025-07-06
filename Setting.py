@@ -4,5 +4,12 @@ class Setting:
         self.distance = 2
         self.angle = 45
 
-        self.fontSize = 8
+        self.fontSize = 9
         self.lineWidth = 2
+
+        self.label_x_offset = 0.5
+        self.label_y_offset = 0.2
+
+        self.digram_name = "London Underground Map"
+        self.legend_title = "Key"
+        
