@@ -18,7 +18,6 @@ class TubeMap():
         self.namePosition = TubeSystem.StationNamePosition()
 
         self.angle = np.radians(self.settings.angle)
-        self.distance = self.settings.distance
 
         self.tubeGraph = nx.Graph()
 
@@ -28,15 +27,15 @@ class TubeMap():
         edges = []
         for i in range(len(lineStaions) - 1):
             edges.append((lineStaions[i],lineStaions[i+1]))
+        self.tubeGraph.add_edges_from(edges)
         return edges
     
-    def generateEdgeColor(self,lineStation):
+    def generateEdgeColor(self,lineStation,color = "blue"):
         edges = self.createEdges(lineStation)
         edge_colors = []
         for edge in self.tubeGraph.edges():
             if edge in edges:
-                edge_colors.append("blue")
-
+                edge_colors.append(color)
             else:
                 edge_colors.append("gray")
         return edge_colors
@@ -52,34 +51,11 @@ class TubeMap():
     # Position generator functions
     def generatePosition(self,direction_list,start_pos= (0,0)):
         pos = []
+        x, y = start_pos
         for direction in direction_list:
-            if direction == "Start":
-                x,y = start_pos
-
-            elif direction == "N":
-                x,y = x, y+ self.distance
-
-            elif direction == "NE":
-                x,y = x + self.distance * np.cos(self.angle) , y + self.distance*np.sin(self.angle)
-
-            elif direction == "E":
-                x,y = x + self.distance, y
-
-            elif direction == "SE":
-                x,y = x + self.distance * np.cos(self.angle) , y - self.distance*np.sin(self.angle)
-
-            elif direction == "S":
-                x,y = x, y - self.distance
-
-            elif direction == "SW":
-                x,y = x - self.distance * np.cos(self.angle) , y - self.distance*np.sin(self.angle)
-
-            elif direction == "W":
-                x,y = x - self.distance, y 
-
-            elif direction == "NW":
-                x,y = x + self.distance * np.cos(self.angle) , y + self.distance*np.sin(self.angle)
-            
+            dx, dy = self.getOffsetAndAlignment(direction,"direction")
+            x += dx
+            y += dy
             pos.append((x,y))
 
         return pos
@@ -103,7 +79,7 @@ class TubeMap():
             node_color_list.append(lineColor[0])
         return node_color_list
     
-    # Others
+    # Label
     def labelStationNames(self,lineStations, linePos,placementList):
         for i,station in enumerate(lineStations):
             (x,y) = linePos[station]
@@ -111,46 +87,52 @@ class TubeMap():
             self.setLabelOffset(station,x,y,placement)
             
     def setLabelOffset(self,station,x,y,placement):
-        if placement == "t":
-            x,y = x, y + self.settings.label_y_offset
-            plt.text(x, y, station, ha= 'center', va='bottom',fontsize = self.settings.fontSize)
+        dx, dy, ha, va = self.getOffsetAndAlignment(placement)
+        x += dx * self.settings.label_x_offset
+        y += dy * self.settings.label_y_offset
+        self.pltTextStationName(x,y,station,ha,va)
+
+    # Others
+    def pltTextStationName(self,x,y,station,ha,va):
+        plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
+
+    def getOffsetAndAlignment(self,key,mode="placement"):
+        if mode == "placement":
+            offsets = {
+                "t":   (0, 1, 'center', 'bottom'),
+                "tr":  (1, 1, 'left', 'bottom'),
+                "r":   (1, 0, 'left', 'center'),
+                "br":  (1, -1, 'left', 'bottom'),
+                "b":   (0, -1, 'center', 'top'),
+                "bl":  (-1, -1, 'right', 'bottom'),
+                "l":   (-1, 0, 'right', 'center'),
+                "tl":  (-1, 1, 'right', 'bottom')
+            }
+            dx, dy, ha, va = offsets.get(key, (0, 0, 'center', 'center'))
+            return (dx, dy, ha, va)
         
-        elif placement == "tr":
-            x,y = x + self.settings.label_x_offset, y + self.settings.label_y_offset
-            plt.text(x, y, station, ha= 'left', va='bottom',fontsize = self.settings.fontSize)
-
-        elif placement == "r":
-            x,y = x + self.settings.label_x_offset, y 
-            plt.text(x, y, station, ha= 'left', va='center',fontsize = self.settings.fontSize)
-        
-        elif placement == "br":
-            x,y = x + self.settings.label_x_offset, y - self.settings.label_y_offset
-            plt.text(x, y, station, ha= 'left', va='bottom',fontsize = self.settings.fontSize)
-
-        elif placement == "b":
-            x,y = x , y -self.settings.label_y_offset
-            plt.text(x, y, station, ha= 'center', va='top',fontsize = self.settings.fontSize)
-
-        elif placement == "bl":
-            x,y = x - self.settings.label_x_offset, y - self.settings.label_y_offset
-            plt.text(x, y, station, ha= 'right', va='bottom',fontsize = self.settings.fontSize)
-
-        elif placement == "l":
-            x,y = x - self.settings.label_x_offset, y
-            plt.text(x, y, station, ha= 'right', va='center',fontsize = self.settings.fontSize)
-
-        elif placement == "tl":
-            x,y = x - self.settings.label_x_offset, y + self.settings.label_y_offset
-            plt.text(x, y, station, ha= 'right', va='bottom',fontsize = self.settings.fontSize)
+        else: # For direction
+            distance = self.settings.distance
+            directions = {
+                "N":  (0, 1),
+                "NE": (np.cos(self.angle), np.sin(self.angle)),
+                "E":  (1, 0),
+                "SE": (np.cos(self.angle), -np.sin(self.angle)),
+                "S":  (0, -1),
+                "SW": (-np.cos(self.angle), -np.sin(self.angle)),
+                "W":  (-1, 0),
+                "NW": (-np.cos(self.angle), np.sin(self.angle))
+            }
+            dx, dy = directions.get(key,(0,0))
+            return (dx * distance, dy * distance)
 
     """Graph"""
     def createLine(self,lineStations,lineDirection,lineColor,namePlacementList,distanceList):
-        line_edges = self.createEdges(lineStations)
-        self.tubeGraph.add_edges_from(line_edges)
         pos = self.generateStationPosition(lineStations,lineDirection)
         stationColorList = self.generateNodeColorList(lineStations,lineColor)
         self.labelStationNames(lineStations,pos,namePlacementList)
         labels = self.generateEdgeLabel(lineStations,distanceList)
+        
         return (pos,stationColorList,labels)
     
 
@@ -174,7 +156,7 @@ class TubeMap():
         
         self.generateLineColorLegend()
         plt.title(self.settings.digram_name)
-        plt.legend(title = self.settings.legend_title,loc = "lower right")
+        plt.legend(title = self.settings.legend_title,loc = self.settings.legend_location)
         plt.show()
 
 
