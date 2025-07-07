@@ -12,4 +12,5 @@ class Setting:
 
         self.digram_name = "London Underground Map"
         self.legend_title = "Key"
+        self.legend_location = "lower right"
         
