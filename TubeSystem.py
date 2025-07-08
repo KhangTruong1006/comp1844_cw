@@ -5,8 +5,8 @@ class TubeSystem:
             "blue",
             ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"],
             [False,False,False,False,False,True],
-            ["Start","NE","E","E","NE","NE"],
-            ["r","t","t","b","r","l"],
+            ["-","NE","E","E","NE","NE"],
+            ["l","t","t","b","r","r"],
             [0.81,0.7,0.45,0.33,0.6]
         )
 
@@ -14,8 +14,8 @@ class TubeSystem:
             "Central",
             "red",
             ["Holborn","Tottenham Court Road","Oxford Circus","Bond Street","Marble Arch","Lancaster Gate"],
-            [True,True,True,True,False,False],
-            ["Start","W","W","W","SW","SW"],
+            [True,False,False,False,False,False],
+            ["-","W","W","W","SW","SW"],
             ["r","t","t","b","r","l"],
             ["a","a","a","a","a"]
         )
