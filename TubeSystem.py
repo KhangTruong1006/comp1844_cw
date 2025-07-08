@@ -1,27 +1,23 @@
 class TubeSystem:
     def __init__(self):
-        pass
+        self.piccadilly = self.lineData(
+            "Piccadilly",
+            "blue",
+            ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"],
+            ["Start","NE","E","E","NE","NE"],
+            ["r","t","t","b","r","l"],
+            [0.81,0.7,0.45,0.33,0.6]
+        )
 
-class LineStation(TubeSystem):
-    def __init__(self):
-        self.piccadilly = ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"]
+        self.list = [self.piccadilly]
 
-class StationNamePosition(TubeSystem):
-    def __init__(self):
-        # Top - Top Right - Right - Bottom Right - Bottom - Bottom Left - Left - Top Left
-        self.piccadilly = ["r","t","t","b","r","l"]
-
-class LineColor(TubeSystem):
-    def __init__(self):
-        self.piccadilly = ["blue","Picaddilly"]
-
-        self.list= [self.piccadilly]
-
-class Direction(TubeSystem):
-    def __init__(self):
-        self.piccailly = ["Start","NE","E","E","NE","NE"]
-
-class StationDistance(TubeSystem):
-    def __init__(self):
-        # In kilometres
-        self.piccadilly = [0.81,0.7,0.45,0.33,0.6]
+    def lineData(self,key_name,color,station,direction,placement,distance):
+        data ={
+            "key" : key_name,
+            "color" : color,
+            "station" : station,        #Station name
+            "direction" : direction,    #Station direction
+            "placement" : placement,    #Placement of station name
+            "distance" : distance
+        }
+        return data

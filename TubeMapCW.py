@@ -3,19 +3,14 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
-import TubeSystem
+from TubeSystem import TubeSystem
 from Setting import Setting
 
 class TubeMap():
     def __init__(self):  
         """Settings"""
         self.settings = Setting()
-
-        self.lineStations = TubeSystem.LineStation()
-        self.direction = TubeSystem.Direction()
-        self.lineColor = TubeSystem.LineColor()
-        self.stationDistance = TubeSystem.StationDistance()
-        self.namePosition = TubeSystem.StationNamePosition()
+        self.tubeSystem = TubeSystem()
 
         self.angle = np.radians(self.settings.angle)
 
@@ -70,13 +65,13 @@ class TubeMap():
     
     # Color generator functions
     def generateLineColorLegend(self):
-        for line in self.lineColor.list:
-            plt.plot([], [], color=line[0], linewidth=2, label=line[1])
+        for line in self.tubeSystem.list:
+            plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
 
     def generateNodeColorList(self,lineStations,lineColor):
         node_color_list = []
         for i in range(len(lineStations)):
-            node_color_list.append(lineColor[0])
+            node_color_list.append(lineColor)
         return node_color_list
     
     # Label
@@ -138,13 +133,13 @@ class TubeMap():
 
     def drawTubeMap(self,figsize = (10,7)):
         plt.figure(figsize=figsize)  
-        pos, nodeColorList,labels = self.createLine(self.lineStations.piccadilly,
-                                             self.direction.piccailly,
-                                             self.lineColor.piccadilly,
-                                             self.namePosition.piccadilly,
-                                             self.stationDistance.piccadilly)
+        pos, nodeColorList,labels = self.createLine(self.tubeSystem.piccadilly["station"],
+                                             self.tubeSystem.piccadilly["direction"],
+                                             self.tubeSystem.piccadilly["color"],
+                                             self.tubeSystem.piccadilly["placement"],
+                                             self.tubeSystem.piccadilly["distance"])
         
-        edge_colors = self.generateEdgeColor(self.lineStations.piccadilly)
+        edge_colors = self.generateEdgeColor(self.tubeSystem.piccadilly["station"])
         
         nx.draw(self.tubeGraph, 
                 pos, 
