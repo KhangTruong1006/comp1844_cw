@@ -22,26 +22,23 @@ class TubeMap():
         edges = []
         for i in range(len(lineStaions) - 1):
             edges.append((lineStaions[i],lineStaions[i+1]))
-        self.tubeGraph.add_edges_from(edges)
         return edges
     
-    def generateEdgeColor(self,lineStation,color = "blue"):
-        edges = self.createEdges(lineStation)
+    def generateEdgeColor(self,edges,color = "blue"):
         edge_colors = []
-        for edge in self.tubeGraph.edges():
+        for edge in edges:
             if edge in edges:
                 edge_colors.append(color)
-            else:
-                edge_colors.append("gray")
+        
         return edge_colors
     
-    def generateEdgeLabel(self,lineStations,distanceList):
-        edges = self.createEdges(lineStations)
+    def generateEdgeLabel(self,edges,distanceList):
         labels = {}
         for i, edge in enumerate(edges):
             labels[edge] = distanceList[i]
 
         return labels
+
 
     # Position generator functions
     def generatePosition(self,direction_list,start_pos= (0,0)):
@@ -65,17 +62,21 @@ class TubeMap():
     
     # Color generator functions
     def generateLineColorLegend(self):
-        for line in self.tubeSystem.list:
+        for line in self.tubeSystem.lines:
             plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
 
     def generateNodeColorList(self,lineStations,lineColor,interchange):
         node_color_list = []
+        node_border_colors = []
         for i in range(len(lineStations)):
             if interchange[i]:
-                node_color_list.append("gray")
+                node_color_list.append(self.settings.interchange_station_color)
+                node_border_colors.append(self.settings.interchange_node_color)
             else:
                 node_color_list.append(lineColor)
-        return node_color_list
+                node_border_colors.append(lineColor)
+
+        return (node_color_list, node_border_colors)
     
     # Label
     def labelStationNames(self,lineStations, linePos,placementList):
@@ -125,28 +126,36 @@ class TubeMap():
             return (dx * distance, dy * distance)
 
     """Graph"""
-    def createLine(self,lineStations,lineDirection,lineColor,namePlacementList,distanceList):
-        pos = self.generateStationPosition(lineStations,lineDirection)
-        stationColorList = self.generateNodeColorList(lineStations,lineColor,self.tubeSystem.piccadilly["interchange"])
-        self.labelStationNames(lineStations,pos,namePlacementList)
-        labels = self.generateEdgeLabel(lineStations,distanceList)
+
+    def createLine(self,linedata):
+        station = linedata["station"]
+        color = linedata["color"]
+        direction = linedata["direction"]
+        distance = linedata["distance"]
+        interchange = linedata["interchange"]
+        namePlacement = linedata["placement"]
+
+        pos = self.generateStationPosition(station,direction)
+        edges = self.createEdges(station)
+        self.tubeGraph.add_edges_from(edges)
+        nodeColor, nodeBorder = self.generateNodeColorList(station,color,interchange)
+        labels = self.generateEdgeLabel(edges,distance)
+        edge_color = self.generateEdgeColor(edges,color)
         
-        return (pos,stationColorList,labels)
+        self.labelStationNames(station,pos,namePlacement)
+        
+      
+        return (pos,nodeColor, nodeBorder,labels,edge_color)
     
 
     def drawTubeMap(self,figsize = (10,7)):
         plt.figure(figsize=figsize)  
-        pos, nodeColorList,labels = self.createLine(self.tubeSystem.piccadilly["station"],
-                                             self.tubeSystem.piccadilly["direction"],
-                                             self.tubeSystem.piccadilly["color"],
-                                             self.tubeSystem.piccadilly["placement"],
-                                             self.tubeSystem.piccadilly["distance"])
-        
-        edge_colors = self.generateEdgeColor(self.tubeSystem.piccadilly["station"])
+        pos, nodeColor, nodeBorder,labels, edge_colors = self.createLine(self.tubeSystem.piccadilly)
         
         nx.draw(self.tubeGraph, 
                 pos, 
-                node_color= nodeColorList,
+                node_color= nodeColor,
+                edgecolors = nodeBorder,
                 edge_color = edge_colors)
         
         nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=labels)
