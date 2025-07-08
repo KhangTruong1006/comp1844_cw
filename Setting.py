@@ -2,6 +2,7 @@ class Setting:
     def __init__(self):
         """Setting"""
         self.distance = 2
+        self.diagonal_distance = 1
         self.angle = 45
 
         self.fontSize = 9
