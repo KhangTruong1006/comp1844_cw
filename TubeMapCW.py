@@ -52,9 +52,9 @@ class TubeMap():
 
         return pos
             
-    def generateStationPosition(self,lineStations,station_direction):
+    def generateStationPosition(self,lineStations,station_direction,start_pos =(0,0)):
         pos ={}
-        stationPos = self.generatePosition(station_direction)
+        stationPos = self.generatePosition(station_direction,start_pos)
         for i in range(len(lineStations)):
             pos[f'{lineStations[i]}'] = stationPos[i]
 
@@ -69,7 +69,7 @@ class TubeMap():
         node_color_list = []
         node_border_colors = []
         for i in range(len(lineStations)):
-            if interchange[i]:
+            if interchange[i] == True:
                 node_color_list.append(self.settings.interchange_station_color)
                 node_border_colors.append(self.settings.interchange_node_color)
             else:
@@ -95,7 +95,7 @@ class TubeMap():
     def pltTextStationName(self,x,y,station,ha,va):
         plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
 
-    def getOffsetAndAlignment(self,key,mode="placement"):
+    def getOffsetAndAlignment(self,key,mode="placement",start_pos =(0,0)):
         if mode == "placement":
             offsets = {
                 "t":   (0, 1, 'center', 'bottom'),
@@ -122,12 +122,12 @@ class TubeMap():
                 "W":  (-1, 0),
                 "NW": (-np.cos(self.angle), np.sin(self.angle))
             }
-            dx, dy = directions.get(key,(0,0))
+            dx, dy = directions.get(key,start_pos)
             return (dx * distance, dy * distance)
 
     """Graph"""
 
-    def createLine(self,linedata):
+    def createLine(self,linedata,start_pos = (0,0)):
         station = linedata["station"]
         color = linedata["color"]
         direction = linedata["direction"]
@@ -135,7 +135,7 @@ class TubeMap():
         interchange = linedata["interchange"]
         namePlacement = linedata["placement"]
 
-        pos = self.generateStationPosition(station,direction)
+        pos = self.generateStationPosition(station,direction,start_pos)
         edges = self.createEdges(station)
         self.tubeGraph.add_edges_from(edges)
         nodeColor, nodeBorder = self.generateNodeColorList(station,color,interchange)
@@ -147,10 +147,51 @@ class TubeMap():
       
         return (pos,nodeColor, nodeBorder,labels,edge_color)
     
+    def createSystem(self,line_list):
+        all_positions = {}
+        all_edge_labels ={}
+        all_node_colors = []
+        all_node_border_colors = []
+        all_edge_colors = []
+        start_pos = (0,0)
+        for i, line in enumerate(line_list):
+            if i == 0:
+                pos, nodeColor, nodeBorder, labels, edge_colors = self.createLine(line, start_pos)
+            else:
+                shared_station = line["station"][0]
+                start_pos = all_positions.get(shared_station, (0, 0))
+                pos, nodeColor, nodeBorder, labels, edge_colors = self.createLine(line, start_pos)
+
+            all_positions.update(pos)
+            all_edge_labels.update(labels)
+            all_node_colors.extend(nodeColor)
+            all_node_border_colors.extend(nodeBorder)
+            all_edge_colors.extend(edge_colors)
+
+            
+
+        # --Filter duplicated node---
+        unique_nodes= list(all_positions.keys())
+
+        node_color_map = {}
+        node_border_map = {}
+
+        i = 0
+        for node in unique_nodes:
+            if node not in node_color_map:
+                node_color_map[node] = all_node_colors[i]
+                node_border_map[node] = all_node_border_colors[i]
+
+            i += 1
+
+        node_colors = [node_color_map[node] for node in unique_nodes]
+        node_borders = [node_border_map[node] for node in unique_nodes]
+
+        return(all_positions,node_colors,node_borders,all_edge_colors,all_edge_labels)
 
     def drawTubeMap(self,figsize = (10,7)):
         plt.figure(figsize=figsize)  
-        pos, nodeColor, nodeBorder,labels, edge_colors = self.createLine(self.tubeSystem.piccadilly)
+        pos, nodeColor, nodeBorder, edge_colors, labels = self.createSystem(self.tubeSystem.lines)
         
         nx.draw(self.tubeGraph, 
                 pos, 
@@ -158,19 +199,25 @@ class TubeMap():
                 edgecolors = nodeBorder,
                 edge_color = edge_colors)
         
+        #nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=labels)
         nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=labels)
-
         
         self.generateLineColorLegend()
         plt.title(self.settings.digram_name)
         plt.legend(title = self.settings.legend_title,loc = self.settings.legend_location)
         plt.show()
 
+    def test(self,isTest = 0):
+        if isTest == 0:
+            try: 
+                self.drawTubeMap()
 
-try:
-    if __name__ == '__main__':
-        tubeMap = TubeMap()
-        tubeMap.drawTubeMap()
+            except Exception as error:
+                print(f"Error: {error}")
+        
+        else: 
+            self.drawTubeMap()
 
-except Exception as error:
-    print(f"Error: {error}")
+if __name__ == '__main__':
+    tubeMap = TubeMap()
+    tubeMap.test(isTest=0)

@@ -13,11 +13,11 @@ class TubeSystem:
         self.central = self.lineData(
             "Central",
             "red",
-            ["Holborn","Tottenham Court Road","Oxford Circus","Bond Street","Marble Arch","Lancaster Gate"],
-            [True,False,False,False,False,False],
-            ["-","W","W","W","SW","SW"],
-            ["r","t","t","b","r","l"],
-            ["a","a","a","a","a"]
+            ["Holborn","Tottenham Court Road","Oxford Circus","Bond Street","Marble Arch","Lancaster Gate","Queensway","Notting Hill Gate"],
+            [False,False,False,False,False,False,False,True],
+            ["-","W","W","W","SW","SW","SW","W"],
+            ["r","t","t","t","l","r","b","tl"],
+            ["a","a","a","a","a","a","a"]
         )
 
         self.lines = [self.piccadilly,self.central]
