@@ -4,6 +4,7 @@ class TubeSystem:
             "Piccadilly",
             "blue",
             ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"],
+            [False,False,False,False,False,False],
             ["Start","NE","E","E","NE","NE"],
             ["r","t","t","b","r","l"],
             [0.81,0.7,0.45,0.33,0.6]
@@ -11,13 +12,15 @@ class TubeSystem:
 
         self.list = [self.piccadilly]
 
-    def lineData(self,key_name,color,station,direction,placement,distance):
+    def lineData(self,key_name,color,station,interchange,direction,placement,distance):
         data ={
             "key" : key_name,
             "color" : color,
             "station" : station,        #Station name
+            "interchange": interchange, #Interchange Station
             "direction" : direction,    #Station direction
             "placement" : placement,    #Placement of station name
             "distance" : distance
         }
+        
         return data

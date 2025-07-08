@@ -68,10 +68,13 @@ class TubeMap():
         for line in self.tubeSystem.list:
             plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
 
-    def generateNodeColorList(self,lineStations,lineColor):
+    def generateNodeColorList(self,lineStations,lineColor,interchange):
         node_color_list = []
         for i in range(len(lineStations)):
-            node_color_list.append(lineColor)
+            if interchange[i]:
+                node_color_list.append("gray")
+            else:
+                node_color_list.append(lineColor)
         return node_color_list
     
     # Label
@@ -124,7 +127,7 @@ class TubeMap():
     """Graph"""
     def createLine(self,lineStations,lineDirection,lineColor,namePlacementList,distanceList):
         pos = self.generateStationPosition(lineStations,lineDirection)
-        stationColorList = self.generateNodeColorList(lineStations,lineColor)
+        stationColorList = self.generateNodeColorList(lineStations,lineColor,self.tubeSystem.piccadilly["interchange"])
         self.labelStationNames(lineStations,pos,namePlacementList)
         labels = self.generateEdgeLabel(lineStations,distanceList)
         
