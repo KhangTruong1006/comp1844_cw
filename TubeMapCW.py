@@ -17,73 +17,16 @@ class TubeMap():
         self.tubeGraph = nx.Graph()
 
     """Functions"""
-    # Edge generator functions
-    def createEdges(self,lineStaions):
-        edges = []
-        for i in range(len(lineStaions) - 1):
-            edges.append((lineStaions[i],lineStaions[i+1]))
-        return edges
-    
-    def generateEdgeColor(self,edges,color = "blue"):
-        edge_colors = []
-        for edge in edges:
-            if edge in edges:
-                edge_colors.append(color)
-        
-        return edge_colors
-    
-    def generateEdgeLabel(self,edges,distanceList):
-        labels = {}
-        for i, edge in enumerate(edges):
-            labels[edge] = distanceList[i]
-
-        return labels
 
 
-    # Position generator functions
-    def generatePosition(self,direction_list,start_pos= (0,0)):
-        pos = []
-        x, y = start_pos
-        for direction in direction_list:
-            dx, dy = self.getOffsetAndAlignment(direction,"direction")
-            x += dx
-            y += dy
-            pos.append((x,y))
-
-        return pos
-            
-    def generateStationPosition(self,lineStations,station_direction,start_pos =(0,0)):
-        pos ={}
-        stationPos = self.generatePosition(station_direction,start_pos)
-        for i in range(len(lineStations)):
-            pos[f'{lineStations[i]}'] = stationPos[i]
-
-        return pos
     
     # Color generator functions
     def generateLineColorLegend(self):
         for line in self.tubeSystem.lines:
             plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
 
-    def generateNodeColorList(self,lineStations,lineColor,interchange):
-        node_color_list = []
-        node_border_colors = []
-        for i in range(len(lineStations)):
-            if interchange[i] == True:
-                node_color_list.append(self.settings.interchange_station_color)
-                node_border_colors.append(self.settings.interchange_node_color)
-            else:
-                node_color_list.append(lineColor)
-                node_border_colors.append(lineColor)
-
-        return (node_color_list, node_border_colors)
     
-    # Label
-    def labelStationNames(self,lineStations, linePos,placementList):
-        for i,station in enumerate(lineStations):
-            (x,y) = linePos[station]
-            placement= placementList[i]
-            self.setLabelOffset(station,x,y,placement)
+
             
     def setLabelOffset(self,station,x,y,placement):
         dx, dy, ha, va = self.getOffsetAndAlignment(placement)
@@ -114,13 +57,13 @@ class TubeMap():
             distance = self.settings.distance
             directions = {
                 "N":  (0, 1),
-                "NE": (np.cos(self.angle), np.sin(self.angle)),
+                "NE": (1, 1),
                 "E":  (1, 0),
-                "SE": (np.cos(self.angle), -np.sin(self.angle)),
+                "SE": (1, -1),
                 "S":  (0, -1),
-                "SW": (-np.cos(self.angle), -np.sin(self.angle)),
+                "SW": (-1,-1),
                 "W":  (-1, 0),
-                "NW": (-np.cos(self.angle), np.sin(self.angle))
+                "NW": (-1, 1)
             }
             dx, dy = directions.get(key,start_pos)
             return (dx * distance, dy * distance)
@@ -135,72 +78,15 @@ class TubeMap():
         interchange = linedata["interchange"]
         namePlacement = linedata["placement"]
 
-        pos = self.generateStationPosition(station,direction,start_pos)
-        edges = self.createEdges(station)
-        self.tubeGraph.add_edges_from(edges)
-        nodeColor, nodeBorder = self.generateNodeColorList(station,color,interchange)
-        labels = self.generateEdgeLabel(edges,distance)
-        edge_color = self.generateEdgeColor(edges,color)
-        
-        self.labelStationNames(station,pos,namePlacement)
         
       
-        return (pos,nodeColor, nodeBorder,labels,edge_color)
+        return 1
     
-    def createSystem(self,line_list):
-        all_positions = {}
-        all_edge_labels ={}
-        all_node_colors = []
-        all_node_border_colors = []
-        all_edge_colors = []
-        start_pos = (0,0)
-        for i, line in enumerate(line_list):
-            if i == 0:
-                pos, nodeColor, nodeBorder, labels, edge_colors = self.createLine(line, start_pos)
-            else:
-                shared_station = line["station"][0]
-                start_pos = all_positions.get(shared_station, (0, 0))
-                pos, nodeColor, nodeBorder, labels, edge_colors = self.createLine(line, start_pos)
-
-            all_positions.update(pos)
-            all_edge_labels.update(labels)
-            all_node_colors.extend(nodeColor)
-            all_node_border_colors.extend(nodeBorder)
-            all_edge_colors.extend(edge_colors)
-
-            
-
-        # --Filter duplicated node---
-        unique_nodes= list(all_positions.keys())
-
-        node_color_map = {}
-        node_border_map = {}
-
-        i = 0
-        for node in unique_nodes:
-            if node not in node_color_map:
-                node_color_map[node] = all_node_colors[i]
-                node_border_map[node] = all_node_border_colors[i]
-
-            i += 1
-
-        node_colors = [node_color_map[node] for node in unique_nodes]
-        node_borders = [node_border_map[node] for node in unique_nodes]
-
-        return(all_positions,node_colors,node_borders,all_edge_colors,all_edge_labels)
+    
 
     def drawTubeMap(self,figsize = (10,7)):
         plt.figure(figsize=figsize)  
-        pos, nodeColor, nodeBorder, edge_colors, labels = self.createSystem(self.tubeSystem.lines)
         
-        nx.draw(self.tubeGraph, 
-                pos, 
-                node_color= nodeColor,
-                edgecolors = nodeBorder,
-                edge_color = edge_colors)
-        
-        #nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=labels)
-        nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=labels)
         
         self.generateLineColorLegend()
         plt.title(self.settings.digram_name)
