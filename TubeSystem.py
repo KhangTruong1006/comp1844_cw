@@ -6,7 +6,7 @@ class TubeSystem:
             ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"],
             [False,False,False,False,False,True],
             ["-","NE","E","E","NE","NE"],
-            ["l","t","t","b","r","r"],
+            ["l","t","t","br","r","r"],
             [0.81,0.7,0.45,0.33,0.6]
         )
 
