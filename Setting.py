@@ -8,8 +8,8 @@ class Setting:
         self.fontSize = 8
         self.lineWidth = 2
 
-        self.label_x_offset = 0.5
-        self.label_y_offset = 0.1
+        self.label_x_offset = 0.3
+        self.label_y_offset = 0.3
 
         """Diagram Setting"""
         self.digram_name = "London Underground Map"
