@@ -17,19 +17,15 @@ class TubeMap():
         self.tubeGraph = nx.Graph()
 
     """Functions"""
-    def generatePositions(self,placeholders,directions,mode = "direction",start_pos = (0,0)):
-        dictionary= {}
+    def generateStationPos(self,placeholders,directions,start_pos = (0,0)):
+        pos= {}
         x, y = start_pos
         for i, direction in enumerate(directions):
-            dx, dy = self.getOffsetAndAlignment(direction,mode)
+            dx, dy = self.getOffsetAndAlignment(direction,"direction")
             x += dx
             y += dy
-            dictionary[f'{placeholders[i]}'] = (x,y)
+            pos[f'{placeholders[i]}'] = (x,y)
 
-        return dictionary
-
-    def generateStationPos(self,placeholders,directions,start_pos = (0,0)):
-        pos = self.generatePositions(placeholders,directions,start_pos=start_pos)
         return pos
 
 
@@ -43,7 +39,7 @@ class TubeMap():
     def addStationEdge(self,stationDict,distance = [], color = "blue"):
         stations = list(stationDict)
         for i in range(len(stations) - 1):
-                self.tubeGraph.add_edge(stations[i], stations[i+1], cce=color,label = distance[i])
+            self.tubeGraph.add_edge(stations[i], stations[i+1], cce=color,label = distance[i])
 
     # Color generator functions
     def displayKeys(self):
@@ -60,9 +56,16 @@ class TubeMap():
     def pltTextStationName(self,x,y,station,ha,va):
         plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
 
+    def displayStationName(self,station_dict,names,placement):
+        for i,(x,y) in enumerate(station_dict.values()):
+            dx,dy, ha, va = self.getOffsetAndAlignment(placement[i],"placement",(x,y))
+            x += dx * self.settings.label_x_offset
+            y += dy * self.settings.label_y_offset
+            self.pltTextStationName(x,y,names[i],ha,va)
+
     def getOffsetAndAlignment(self,key,mode="direction",start_pos =(0,0)):
+        distance = self.settings.distance
         if mode == "direction":
-            distance = self.settings.distance
             directions = {
                 "N":  (0, 1),
                 "NE": (1, 1),
@@ -78,17 +81,17 @@ class TubeMap():
         
         else: # For placement
             offsets = {
-                "t":   (0, 1, 'center', 'bottom'),
-                "tr":  (1, 1, 'left', 'bottom'),
-                "r":   (1, 0, 'left', 'center'),
-                "br":  (1, -1, 'left', 'bottom'),
-                "b":   (0, -1, 'center', 'top'),
-                "bl":  (-1, -1, 'right', 'bottom'),
-                "l":   (-1, 0, 'right', 'center'),
-                "tl":  (-1, 1, 'right', 'bottom')
+                "t":   (0, 1,'center', 'bottom'),
+                "tr":  (1, 1,'left', 'bottom'),
+                "r":   (1, 0,'left', 'center'),
+                "br":  (1, -1,'left', 'bottom'),
+                "b":   (0, -1,'center', 'top'),
+                "bl":  (-1, -1,'right', 'bottom'),
+                "l":   (-1, 0,'right', 'center'),
+                "tl":  (-1, 1,'right', 'bottom')
             }
-            dx, dy, ha, va = offsets.get(key, (0, 0, 'center', 'center'))
-            return (dx, dy, ha, va)
+            dx, dy, ha, va = offsets.get(key, (0,0,'center', 'center'))
+            return (dx,dy, ha, va)
             
 
     """Graph"""
@@ -105,9 +108,11 @@ class TubeMap():
 
         self.addStationNode(station_dict,color)
         self.addStationEdge(station_dict,distance,color)
+        self.displayStationName(station_dict,stations,namePlacement)
 
-    def drawTubeMap(self,figsize = (10,7)):
-        plt.figure(figsize=figsize) 
+
+    def drawTubeMap(self):
+        plt.figure(figsize= self.settings.figsize) 
 
 
         self.createLine(self.tubeSystem.piccadilly)
