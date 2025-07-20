@@ -17,62 +17,39 @@ class TubeMap():
         self.tubeGraph = nx.Graph()
 
     """Functions"""
-    def generateStationPos(self,stations,directions,start_pos = (0,0)):
-        pos = {}
+    def generatePositions(self,placeholders,directions,mode = "direction",start_pos = (0,0)):
+        dictionary= {}
         x, y = start_pos
         for i, direction in enumerate(directions):
-            dx, dy = self.getOffsetAndAlignment(direction,"direction")
+            dx, dy = self.getOffsetAndAlignment(direction,mode)
             x += dx
             y += dy
-            pos[f'{stations[i]}'] = (x,y)
+            dictionary[f'{placeholders[i]}'] = (x,y)
 
+        return dictionary
+
+    def generateStationPos(self,placeholders,directions,start_pos = (0,0)):
+        pos = self.generatePositions(placeholders,directions,start_pos=start_pos)
         return pos
 
-    def labelEdgeDistance(self,edges,distanceList):
-        distances = {}
-        for i, edge in enumerate(edges):
-            distances[edge] = distanceList[i]
 
-        return distances
+    def createNode(self,name,pos,color = "blue"):
+        self.tubeGraph.add_node(name,npos = pos, ccn= color)
 
-    def generateEdgeColor(self,color = "blue"):
-        edge_colors = []
-        for edge in self.tubeGraph.edges():
-            edge_colors.append(color)
+    def addStationNode(self,line_data,color = "blue"):
+        for station in line_data:
+            self.createNode(station,line_data[station],color)
 
-        return edge_colors
-    
-    def generateStationColor(self,stations,color = "blue"):
-        station_colors ={}
-        for station in stations:
-            station_colors[station] = color
-        
-        return station_colors
-
-    def convertToArray(self,dict):
-        items = [dict[n] for n in dict]
-        return items
-
-    def addStationNode(self,stations):
-        for station in stations:
-            if station not in self.tubeGraph.nodes():
-                self.tubeGraph.add_node(station)
-
-    def addStationEdge(self,stations):
-        for i in range(len(stations)-1):
-            self.tubeGraph.add_edge(stations[i],stations[i+1])
-
-    def labelStationName(self,stations,pos,placementList):
-        for i, station in enumerate(stations):
-            x,y = pos[station]
-            placement = placementList[i]
-            self.setLabelOffset(station,x,y,placement)
+    def addStationEdge(self,stationDict,distance = [], color = "blue"):
+        stations = list(stationDict)
+        for i in range(len(stations) - 1):
+                self.tubeGraph.add_edge(stations[i], stations[i+1], cce=color,label = distance[i])
 
     # Color generator functions
-    def generateLineColorLegend(self):
+    def displayKeys(self):
         for line in self.tubeSystem.lines:
             plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
-            
+    
     def setLabelOffset(self,station,x,y,placement):
         dx, dy, ha, va = self.getOffsetAndAlignment(placement)
         x += dx * self.settings.label_x_offset
@@ -83,8 +60,23 @@ class TubeMap():
     def pltTextStationName(self,x,y,station,ha,va):
         plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
 
-    def getOffsetAndAlignment(self,key,mode="placement",start_pos =(0,0)):
-        if mode == "placement":
+    def getOffsetAndAlignment(self,key,mode="direction",start_pos =(0,0)):
+        if mode == "direction":
+            distance = self.settings.distance
+            directions = {
+                "N":  (0, 1),
+                "NE": (1, 1),
+                "E":  (1, 0),
+                "SE": (1, -1),
+                "S":  (0, -1),
+                "SW": (-1, -1),
+                "W":  (-1, 0),
+                "NW": (-1, 1)
+            }
+            dx, dy = directions.get(key,start_pos)
+            return (dx * distance, dy * distance)
+        
+        else: # For placement
             offsets = {
                 "t":   (0, 1, 'center', 'bottom'),
                 "tr":  (1, 1, 'left', 'bottom'),
@@ -97,72 +89,44 @@ class TubeMap():
             }
             dx, dy, ha, va = offsets.get(key, (0, 0, 'center', 'center'))
             return (dx, dy, ha, va)
-        
-        else: # For direction
-            distance = self.settings.distance
-            directions = {
-                "N":  (0, 1),
-                "NE": (np.cos(self.angle), np.sin(self.angle)),
-                "E":  (1, 0),
-                "SE": (np.cos(self.angle), -np.sin(self.angle)),
-                "S":  (0, -1),
-                "SW": (-np.cos(self.angle), -np.sin(self.angle)),
-                "W":  (-1, 0),
-                "NW": (-np.cos(self.angle), np.sin(self.angle))
-            }
-            dx, dy = directions.get(key,start_pos)
-            return (dx * distance, dy * distance)
+            
 
     """Graph"""
+    def createLine(self,line_data,start_pos=(0,0)):
+        stations = line_data["station"]
+        placeholder = line_data["placeholder"]
+        color = line_data["color"]
+        directions = line_data["direction"]
+        distance = line_data["distance"]
+        interchange = line_data["interchange"]
+        namePlacement = line_data["placement"]
 
-    def createLine(self,linedata,start_pos = (0,0)):
-        stations = linedata["station"]
-        color = linedata["color"]
-        directions = linedata["direction"]
-        distance = linedata["distance"]
-        interchange = linedata["interchange"]
-        namePlacement = linedata["placement"]
+        station_dict = self.generateStationPos(placeholder, directions,start_pos)
 
-        self.addStationEdge(stations)
-        self.addStationNode(stations)
-
-        pos = self.generateStationPos(stations,directions,start_pos)
-        edge_colors = self.generateEdgeColor(color)
-        node_colors = self.convertToArray(self.generateStationColor(stations,color))
-        edge_distances = self.labelEdgeDistance(self.tubeGraph.edges(),distance)
-
-        self.labelStationName(stations,pos,namePlacement)
-
-        return pos,edge_colors,node_colors,edge_distances
-    
-    def createSystem(self,system_list):
-        all_stations = []
-        all_pos = {}
-        all_edge_colors = []
-        all_node_colors = []
-        for system in system_list:
-            stations,pos, edge_colors, node_colors = self.createLine(system)
-            all_pos.update(pos)
-            all_edge_colors.extend(edge_colors)
-            all_node_colors.extend(node_colors)
-            all_stations.extend(stations)
-        
-        return all_pos, all_edge_colors,  all_node_colors
+        self.addStationNode(station_dict,color)
+        self.addStationEdge(station_dict,distance,color)
 
     def drawTubeMap(self,figsize = (10,7)):
-        plt.figure(figsize=figsize)  
+        plt.figure(figsize=figsize) 
 
-        pos, edge_colors, node_colors, edge_labels = self.createLine(self.tubeSystem.piccadilly)
-        
-        nx.draw(self.tubeGraph,
-                pos,
-                node_color = node_colors,
-                edge_color = edge_colors)
-        
-        nx.draw_networkx_edge_labels(self.tubeGraph,pos,edge_labels=edge_labels)
 
-        self.generateLineColorLegend()
-        plt.title(self.settings.digram_name)
+        self.createLine(self.tubeSystem.piccadilly)
+
+        pos = nx.get_node_attributes(self.tubeGraph,'npos')
+        nodecolour = nx.get_node_attributes(self.tubeGraph, 'ccn')
+        edgecolour = nx.get_edge_attributes(self.tubeGraph, 'cce')
+        edge_labels = nx.get_edge_attributes(self.tubeGraph,'label')
+
+        nodeColorArray = nodecolour.values()
+        edgeColorArray = edgecolour.values()
+
+        self.displayKeys()
+        nx.draw_networkx(self.tubeGraph,pos,node_color = nodeColorArray, with_labels=False)
+        nx.draw_networkx_edges(self.tubeGraph,pos,edge_color=edgeColorArray)
+        nx.draw_networkx_edge_labels(self.tubeGraph, pos, edge_labels=edge_labels)
+
+
+        plt.title(self.settings.diagram_name)
         plt.legend(title = self.settings.legend_title,loc = self.settings.legend_location)
         plt.show()
 
