@@ -12,16 +12,14 @@ class TubeMap():
         self.settings = Setting()
         self.tubeSystem = TubeSystem()
 
-        self.angle = np.radians(self.settings.angle)
-
         self.tubeGraph = nx.Graph()
 
     """Functions"""
-    def generateStationPos(self,placeholders,directions,start_pos = (0,0)):
+    def generateStationPos(self,placeholders,node_pos,directions,start_pos = (0,0)):
         pos= {}
         x, y = start_pos
         for i, direction in enumerate(directions):
-            dx, dy = self.getOffsetAndAlignment(direction,"direction")
+            dx, dy = self.getOffsetAndAlignment(direction,node_pos[i],"direction")
             x += dx
             y += dy
             pos[f'{placeholders[i]}'] = (x,y)
@@ -65,8 +63,7 @@ class TubeMap():
             y += dy * self.settings.label_y_offset
             self.pltTextStationName(x,y,names[i],ha,va)
 
-    def getOffsetAndAlignment(self,key,mode="direction",start_pos =(0,0)):
-        distance = self.settings.distance
+    def getOffsetAndAlignment(self,key,distance = 1,mode="direction",start_pos =(0,0)):
         if mode == "direction":
             directions = {
                 "N":  (0, 1),
@@ -105,8 +102,9 @@ class TubeMap():
         distance = line_data["distance"]
         interchange = line_data["interchange"]
         namePlacement = line_data["placement"]
+        nodeDistance = line_data["node_distance"]
 
-        station_dict = self.generateStationPos(placeholder, directions,start_pos)
+        station_dict = self.generateStationPos(placeholder, nodeDistance,directions,start_pos)
 
         self.addStationNode(station_dict,interchange,color)
         self.addStationEdge(station_dict,distance,color)
@@ -117,7 +115,8 @@ class TubeMap():
         plt.figure(figsize= self.settings.figsize) 
 
         self.createLine(self.tubeSystem.piccadilly)
-        self.createLine(self.tubeSystem.central,(70,20))
+        self.createLine(self.tubeSystem.central,(10,2))
+        self.createLine(self.tubeSystem.jubilee,(-1,3))
 
         pos = nx.get_node_attributes(self.tubeGraph,'npos')
         nodecolour = nx.get_node_attributes(self.tubeGraph, 'ccn')
