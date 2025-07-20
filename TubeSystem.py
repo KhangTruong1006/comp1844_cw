@@ -8,7 +8,7 @@ class TubeSystem:
             [False,False,False,False,False,True,False,True],
             ["-","NE","E","E","NE","NE","NE","N"],
             ["l","t","t","br","r","r","l","r"],
-            [0.81,0.7,0.45,0.33,0.6,"A","A"]
+            [0.81,0.7,0.45,0.33,0.6,0.69,0.84]
         )
 
         self.central = self.lineData(
@@ -19,7 +19,7 @@ class TubeSystem:
             [False,False,True,False,False,False,False,False,False,True],
             ["-","W","NW","NW","W","W","SW","SW","SW","W"],
             ["r","b","r","t","b","t","tl","r","br","l"],
-            ["a","a","a","a","a","a","a","a","a"]
+            [1.03,0.63,0.7,0.81,0.49,0.65,1.2,0.83,0.63]
         )
 
         self.lines = [self.piccadilly,self.central]
