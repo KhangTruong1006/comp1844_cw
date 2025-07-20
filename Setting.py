@@ -12,7 +12,7 @@ class Setting:
         self.label_y_offset = 0.3
 
         """Diagram Setting"""
-        self.digram_name = "London Underground Map"
+        self.diagram_name = "London Underground Map"
         self.legend_title = "Key"
         self.legend_location = "lower right"
 
