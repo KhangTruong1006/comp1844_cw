@@ -28,14 +28,16 @@ class TubeMap():
 
         return pos
 
+    def createNode(self,name,pos,color = "blue", node_edge = "black"):
+        self.tubeGraph.add_node(name,npos = pos, ccn= color, nbc = node_edge)
 
-    def createNode(self,name,pos,color = "blue"):
-        self.tubeGraph.add_node(name,npos = pos, ccn= color)
-
-    def addStationNode(self,line_data,color = "blue"):
-        for station in line_data:
-            self.createNode(station,line_data[station],color)
-
+    def addStationNode(self,line_data,interchange,color = "blue"):
+        for i,station in enumerate(line_data):
+            if interchange[i] != True:
+                self.createNode(station,line_data[station],color,color)
+            else:
+                self.createNode(station,line_data[station],"white")
+    
     def addStationEdge(self,stationDict,distance = [], color = "blue"):
         stations = list(stationDict)
         for i in range(len(stations) - 1):
@@ -106,7 +108,7 @@ class TubeMap():
 
         station_dict = self.generateStationPos(placeholder, directions,start_pos)
 
-        self.addStationNode(station_dict,color)
+        self.addStationNode(station_dict,interchange,color)
         self.addStationEdge(station_dict,distance,color)
         self.displayStationName(station_dict,stations,namePlacement)
 
@@ -114,22 +116,23 @@ class TubeMap():
     def drawTubeMap(self):
         plt.figure(figsize= self.settings.figsize) 
 
-
         self.createLine(self.tubeSystem.piccadilly)
+        self.createLine(self.tubeSystem.central,(70,20))
 
         pos = nx.get_node_attributes(self.tubeGraph,'npos')
         nodecolour = nx.get_node_attributes(self.tubeGraph, 'ccn')
+        nodeborder = nx.get_node_attributes(self.tubeGraph, 'nbc')
         edgecolour = nx.get_edge_attributes(self.tubeGraph, 'cce')
         edge_labels = nx.get_edge_attributes(self.tubeGraph,'label')
 
         nodeColorArray = nodecolour.values()
+        nodeBorderArray = nodeborder.values()
         edgeColorArray = edgecolour.values()
 
         self.displayKeys()
-        nx.draw_networkx(self.tubeGraph,pos,node_color = nodeColorArray, with_labels=False)
+        nx.draw(self.tubeGraph,pos,node_color = nodeColorArray,edgecolors=nodeBorderArray, with_labels=False)
         nx.draw_networkx_edges(self.tubeGraph,pos,edge_color=edgeColorArray)
         nx.draw_networkx_edge_labels(self.tubeGraph, pos, edge_labels=edge_labels)
-
 
         plt.title(self.settings.diagram_name)
         plt.legend(title = self.settings.legend_title,loc = self.settings.legend_location)
