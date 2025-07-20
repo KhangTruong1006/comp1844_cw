@@ -1,15 +1,11 @@
 class Setting:
     def __init__(self):
         """Setting"""
-        self.distance = 10
-        self.diagonal_distance = 1
-        self.angle = 45
-
         self.fontSize = 8
         self.lineWidth = 2
 
-        self.label_x_offset = 2
-        self.label_y_offset = 2
+        self.label_x_offset = 0.3
+        self.label_y_offset = 0.2
 
         """Diagram Setting"""
         self.figsize = (12,8) # Width - Height
