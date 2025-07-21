@@ -3,6 +3,7 @@ class TubeSystem:
         self.piccadilly = self.lineData(
             "Piccadilly",
             "navy",
+            (-1,-1),
             [0,2,3,3,1,1],
             ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"],
             [False,False,False,False,False,False],
@@ -14,6 +15,7 @@ class TubeSystem:
         self.central = self.lineData(
             "Central",
             "red",
+            (12,2),
             [0,2,1,4,3,3,2,1,1,2],
             ["St Paul's","Chancery Lane","Holborn","Tottenham Court Road","Oxford Circus","Bond Street","Marble Arch","Lancaster Gate","Queensway","Notting Hill Gate"],
             [False,False,True,False,True,True,False,False,False,False],
@@ -25,6 +27,7 @@ class TubeSystem:
         self.jubilee = self.lineData(
             "Jubilee",
             "lightslategray",
+            (-1,8),
             [0,2,3,2,2.5,1.5,3,2,2],
             ["St John's Wood","Baker Street","Bond Street","Green Park","Westminster","Waterloo","Southwark","London Bridge","Bermondsey"],
             [False,True,True,True,False,True,False,False,False],
@@ -36,6 +39,7 @@ class TubeSystem:
         self.bakerloo = self.lineData(
             "Bakerloo",
             "brown",
+            (-3,8),
             [0,2,1.5,1.5,2,1,1.5,1.5,2,],
             ["Marylebone","Baker Street","Regent's Park","Oxford Circus","Piccadilly Circus","Charing Cross","Embankment","Waterloo","Lambeth North"],
             [False,True,False,True,True,False,False,True,False],
@@ -46,10 +50,11 @@ class TubeSystem:
 
         self.lines = [self.bakerloo,self.central,self.jubilee,self.piccadilly]
 
-    def lineData(self,key_name,color,node_distance,station,interchange,direction,placement,distance):
+    def lineData(self,key_name,color,start,node_distance,station,interchange,direction,placement,distance):
         data ={
             "key" : key_name,
             "color" : color,
+            "start": start,
             "node_distance": node_distance, # Distance between nodes
             "station" : station,            # Station name
             "interchange": interchange,     # Interchange Station
