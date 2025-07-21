@@ -2,38 +2,49 @@ class TubeSystem:
     def __init__(self):
         self.piccadilly = self.lineData(
             "Piccadilly",
-            "blue",
-            [0,1,2,2,1,1,1,1],
+            "navy",
+            [0,2,3,3,1,1,2,2],
             ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn","Russell Square","King Cross\n& St Pancras\nInternational"],
-            [False,False,False,False,False,True,False,False],
+            [False,True,True,False,False,True,False,False],
             ["-","NE","E","E","NE","NE","NE","N"],
-            ["l","l","t","br","l","r","l","r"],
+            ["l","tr","tr","br","l","r","l","r"],
             [0.81,0.7,0.45,0.33,0.6,0.69,0.84]
         )
 
         self.central = self.lineData(
             "Central",
             "red",
-            [0,2,1,2,2,4,1,1,1,2],
+            [0,2,1,4,3,3,2,1,1,2],
             ["St Paul's","Chancery Lane","Holborn","Tottenham Court Road","Oxford Circus","Bond Street","Marble Arch","Lancaster Gate","Queensway","Notting Hill Gate"],
-            [False,False,True,False,False,False,False,False,False,False],
+            [False,False,True,False,True,True,False,False,False,False],
             ["-","W","NW","W","W","W","SW","SW","SW","W"],
-            ["r","b","r","t","b","t","tl","r","br","l"],
+            ["r","b","r","tr","tr","tl","tl","r","b","l"],
             [1.03,0.63,0.7,0.81,0.49,0.65,1.2,0.83,0.63]
         )
 
         self.jubilee = self.lineData(
             "Jubilee",
             "gray",
-            [0,2,2,1,2,2,2],
-            ["Bond Street","Green Park","Westminster","Waterloo","Southwark","London Bridge","Bermondsey"],
-            [True,True,False,False,False,False,False],
-            ["-","SE","SE","SE","E","NE","E"],
-            ["t","l","l","l","b","tl","b"],
-            ["A","A","A","A","A","A"]
+            [0,2,3,2,2,1,3,2,2],
+            ["St John's Wood","Baker Street","Bond Street","Green Park","Westminster","Waterloo","Southwark","London Bridge","Bermondsey"],
+            [False,True,True,True,False,False,False,False,False],
+            ["-","S","S","SE","SE","SE","E","NE","E"],
+            ["tr","tr","tl","tr","l","l","b","tl","b"],
+            ["A","A","A","A","A","A","A","A"]
+        )
+        
+        self.bakerloo = self.lineData(
+            "Bakerloo",
+            "brown",
+            [0,2,1.5,1.5,2,1],
+            ["Marylebone","Baker Street","Regent's Park","Oxford Circus","Piccadilly Circus","Charing Cross"],
+            [False,True,False,True,True,False],
+            ["-","SE","SE","SE","SE","SE"],
+            ["t","tr","r","tr","tr","br"],
+            ["b","b","b","b","b","b"]
         )
 
-        self.lines = [self.piccadilly,self.central,self.jubilee]
+        self.lines = [self.bakerloo,self.central,self.jubilee,self.piccadilly]
 
     def lineData(self,key_name,color,node_distance,station,interchange,direction,placement,distance):
         data ={
