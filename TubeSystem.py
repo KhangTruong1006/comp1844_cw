@@ -3,12 +3,12 @@ class TubeSystem:
         self.piccadilly = self.lineData(
             "Piccadilly",
             "navy",
-            [0,2,3,3,1,1,2,2],
-            ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn","Russell Square","King Cross\n& St Pancras\nInternational"],
-            [False,False,False,False,False,False,False,False],
-            ["-","NE","E","E","NE","NE","NE","N"],
-            ["l","tr","tr","br","l","r","l","r"],
-            [0.81,0.7,0.45,0.33,0.6,0.69,0.84]
+            [0,2,3,3,1,1],
+            ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn"],
+            [False,False,False,False,False,False],
+            ["-","NE","E","E","NE","NE"],
+            ["l","tr","tr","br","l","r"],
+            [0.81,0.7,0.45,0.33,0.6]
         )
 
         self.central = self.lineData(
