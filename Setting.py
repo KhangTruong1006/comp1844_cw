@@ -4,8 +4,8 @@ class Setting:
         self.fontSize = 8
         self.lineWidth = 2
 
-        self.label_x_offset = 0.3
-        self.label_y_offset = 0.2
+        self.label_x_offset = 0.4
+        self.label_y_offset = 0.3
 
         """Diagram Setting"""
         self.figsize = (12,8) # Width - Height
@@ -15,5 +15,5 @@ class Setting:
         self.legend_location = "lower right"
 
         self.interchange_station_color = "white"
-        self.interchange_node_color = "black"
+        self.interchange_border_color = "black"
         
