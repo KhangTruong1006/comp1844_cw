@@ -7,8 +7,11 @@ class Setting:
         self.label_x_offset = 0.4
         self.label_y_offset = 0.3
 
+        self.node_size = 300
+        self.node_label_enabled = False
+
         """Diagram Setting"""
-        self.figsize = (12,8) # Width - Height
+        self.figsize = (15,8) # Width - Height
 
         self.diagram_name = "London Underground Map"
         self.legend_title = "Key"
