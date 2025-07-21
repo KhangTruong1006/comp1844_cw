@@ -5,7 +5,7 @@ class TubeSystem:
             "navy",
             [0,2,3,3,1,1,2,2],
             ["Hyde Park Corner","Green Park","Piccadilly Circus","Leicester Square","Covent Garden","Holborn","Russell Square","King Cross\n& St Pancras\nInternational"],
-            [False,True,True,False,False,True,False,False],
+            [False,False,False,False,False,False,False,False],
             ["-","NE","E","E","NE","NE","NE","N"],
             ["l","tr","tr","br","l","r","l","r"],
             [0.81,0.7,0.45,0.33,0.6,0.69,0.84]
@@ -24,24 +24,24 @@ class TubeSystem:
 
         self.jubilee = self.lineData(
             "Jubilee",
-            "gray",
-            [0,2,3,2,2,1,3,2,2],
+            "lightslategray",
+            [0,2,3,2,2.5,1.5,3,2,2],
             ["St John's Wood","Baker Street","Bond Street","Green Park","Westminster","Waterloo","Southwark","London Bridge","Bermondsey"],
-            [False,True,True,True,False,False,False,False,False],
+            [False,True,True,True,False,True,False,False,False],
             ["-","S","S","SE","SE","SE","E","NE","E"],
             ["tr","tr","tl","tr","l","l","b","tl","b"],
-            ["A","A","A","A","A","A","A","A"]
+            [1.75,1.7,1.17,1.4,0.81,0.55,1.26,1.98]
         )
         
         self.bakerloo = self.lineData(
             "Bakerloo",
             "brown",
-            [0,2,1.5,1.5,2,1],
-            ["Marylebone","Baker Street","Regent's Park","Oxford Circus","Piccadilly Circus","Charing Cross"],
-            [False,True,False,True,True,False],
-            ["-","SE","SE","SE","SE","SE"],
-            ["t","tr","r","tr","tr","br"],
-            ["b","b","b","b","b","b"]
+            [0,2,1.5,1.5,2,1,1.5,1.5,2,],
+            ["Marylebone","Baker Street","Regent's Park","Oxford Circus","Piccadilly Circus","Charing Cross","Embankment","Waterloo","Lambeth North"],
+            [False,True,False,True,True,False,False,True,False],
+            ["-","SE","SE","SE","SE","SE","S","S","S"],
+            ["t","tr","r","tr","tr","br","r","l","r"],
+            [0.43,0.72,1,0.94,0.57,0.38,0.7,0.52]
         )
 
         self.lines = [self.bakerloo,self.central,self.jubilee,self.piccadilly]
