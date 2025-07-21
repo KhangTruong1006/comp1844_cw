@@ -81,7 +81,7 @@ class TubeMap():
         else: # For placement
             offsets = {
                 "t":   (0, 1,'center', 'bottom'),
-                "tr":  (1, 1,'left', 'bottom'),
+                "tr":  (0.5, 1,'left', 'bottom'),
                 "r":   (1, 0,'left', 'center'),
                 "br":  (1, -1,'left', 'bottom'),
                 "b":   (0, -1,'center', 'top'),
@@ -110,27 +110,39 @@ class TubeMap():
         self.addStationEdge(station_dict,distance,color)
         self.displayStationName(station_dict,stations,namePlacement)
 
-
-    def drawTubeMap(self):
+    def Task_1(self):
         plt.figure(figsize= self.settings.figsize) 
-
+        self.createLine(self.tubeSystem.piccadilly)
+        
+        self.drawTubeMap()
+        
+    def Task_2(self):
+        plt.figure(figsize= self.settings.figsize)
         self.createLine(self.tubeSystem.piccadilly,(-1,-1))
         self.createLine(self.tubeSystem.central,(12,2))
         self.createLine(self.tubeSystem.jubilee,(-1,8))
         self.createLine(self.tubeSystem.bakerloo,(-3,8))
-
+        
+        self.drawTubeMap()
+    
+    def drawTubeMap(self):
         pos = nx.get_node_attributes(self.tubeGraph,'npos')
-        nodecolour = nx.get_node_attributes(self.tubeGraph, 'ncl')
-        nodeborder = nx.get_node_attributes(self.tubeGraph, 'nbc')
-        edgecolour = nx.get_edge_attributes(self.tubeGraph, 'ecl')
-        edge_labels = nx.get_edge_attributes(self.tubeGraph,'label')
+        nodeColor = nx.get_node_attributes(self.tubeGraph, 'ncl')   # ncl - Node Color
+        nodeBorder = nx.get_node_attributes(self.tubeGraph, 'nbc')  # nbc - Node Border Color - mostly for interchange station
+        edgeColor = nx.get_edge_attributes(self.tubeGraph, 'ecl')   # ecl - Edge Color
+        edge_labels = nx.get_edge_attributes(self.tubeGraph,'label')# Edge Label
 
-        nodeColorArray = list(nodecolour.values())
-        nodeBorderArray = list(nodeborder.values())
-        edgeColorArray = list(edgecolour.values())
+        nodeColorArray = list(nodeColor.values())
+        nodeBorderArray = list(nodeBorder.values())
+        edgeColorArray = list(edgeColor.values())
 
         self.displayKeys()
-        nx.draw(self.tubeGraph,pos,node_color = nodeColorArray,edgecolors=nodeBorderArray, with_labels=False)
+        nx.draw(self.tubeGraph,
+                pos,node_size = self.settings.node_size,
+                node_color = nodeColorArray,
+                edgecolors=nodeBorderArray, 
+                with_labels=self.settings.node_label_enabled)
+        
         nx.draw_networkx_edges(self.tubeGraph,pos,edge_color=edgeColorArray)
         nx.draw_networkx_edge_labels(self.tubeGraph, pos, edge_labels=edge_labels)
 
@@ -138,17 +150,11 @@ class TubeMap():
         plt.legend(title = self.settings.legend_title,loc = self.settings.legend_location)
         plt.show()
 
-    def test(self,isTest = 0):
-        if isTest != 0:
-            try: 
-                self.drawTubeMap()
-
-            except Exception as error:
-                print(f"Error: {error}")
-        
-        else: 
-            self.drawTubeMap()
-
 if __name__ == '__main__':
-    tubeMap = TubeMap()
-    tubeMap.test(isTest=1)
+    try: 
+        run = TubeMap()
+        run.Task_1()
+        # run.Task_2()
+
+    except Exception as error:
+        print(f"Error: {error}")
