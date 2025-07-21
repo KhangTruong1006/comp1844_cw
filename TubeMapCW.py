@@ -27,19 +27,19 @@ class TubeMap():
         return pos
 
     def createNode(self,name,pos,color = "blue", node_edge = "black"):
-        self.tubeGraph.add_node(name,npos = pos, ccn= color, nbc = node_edge)
+        self.tubeGraph.add_node(name,npos = pos, ncl= color, nbc = node_edge)
 
     def addStationNode(self,line_data,interchange,color = "blue"):
         for i,station in enumerate(line_data):
             if interchange[i] != True:
-                self.createNode(station,line_data[station],color,color)
+                self.createNode(station, line_data[station], color, color)
             else:
-                self.createNode(station,line_data[station],"white")
+                self.createNode(station, line_data[station], self.settings.interchange_station_color)
     
     def addStationEdge(self,stationDict,distance = [], color = "blue"):
         stations = list(stationDict)
         for i in range(len(stations) - 1):
-            self.tubeGraph.add_edge(stations[i], stations[i+1], cce=color,label = distance[i])
+            self.tubeGraph.add_edge(stations[i], stations[i+1], ecl=color,label = distance[i])
 
     # Color generator functions
     def displayKeys(self):
@@ -85,7 +85,7 @@ class TubeMap():
                 "r":   (1, 0,'left', 'center'),
                 "br":  (1, -1,'left', 'bottom'),
                 "b":   (0, -1,'center', 'top'),
-                "bl":  (-1, -1,'right', 'bottom'),
+                "bl":  (-1,-1,'right', 'bottom'),
                 "l":   (-1, 0,'right', 'center'),
                 "tl":  (-1, 1,'right', 'bottom')
             }
@@ -114,19 +114,20 @@ class TubeMap():
     def drawTubeMap(self):
         plt.figure(figsize= self.settings.figsize) 
 
-        self.createLine(self.tubeSystem.piccadilly)
-        self.createLine(self.tubeSystem.central,(10,2))
-        self.createLine(self.tubeSystem.jubilee,(-1,3))
+        self.createLine(self.tubeSystem.piccadilly,(-1,-1))
+        self.createLine(self.tubeSystem.central,(12,2))
+        self.createLine(self.tubeSystem.jubilee,(-1,8))
+        self.createLine(self.tubeSystem.bakerloo,(-3,8))
 
         pos = nx.get_node_attributes(self.tubeGraph,'npos')
-        nodecolour = nx.get_node_attributes(self.tubeGraph, 'ccn')
+        nodecolour = nx.get_node_attributes(self.tubeGraph, 'ncl')
         nodeborder = nx.get_node_attributes(self.tubeGraph, 'nbc')
-        edgecolour = nx.get_edge_attributes(self.tubeGraph, 'cce')
+        edgecolour = nx.get_edge_attributes(self.tubeGraph, 'ecl')
         edge_labels = nx.get_edge_attributes(self.tubeGraph,'label')
 
-        nodeColorArray = nodecolour.values()
-        nodeBorderArray = nodeborder.values()
-        edgeColorArray = edgecolour.values()
+        nodeColorArray = list(nodecolour.values())
+        nodeBorderArray = list(nodeborder.values())
+        edgeColorArray = list(edgecolour.values())
 
         self.displayKeys()
         nx.draw(self.tubeGraph,pos,node_color = nodeColorArray,edgecolors=nodeBorderArray, with_labels=False)
