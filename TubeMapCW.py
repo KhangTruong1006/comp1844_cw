@@ -14,6 +14,8 @@ class TubeMap():
 
         self.tubeGraph = nx.Graph()
 
+        self.keys = []
+
     """Functions"""
     # Add functions
     def addStationNode(self,line_data,interchange,color = "blue"):
@@ -30,8 +32,8 @@ class TubeMap():
 
     # Display functions
     def displayKeys(self):
-        for line in self.tubeSystem.lines:
-            plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
+        for key in self.keys:
+            plt.plot([], [], color=key["color"], linewidth=2, label=key["key"])
             
     def displayStationName(self,station_dict,names,placement):
         for i,(x,y) in enumerate(station_dict.values()):
@@ -88,7 +90,7 @@ class TubeMap():
             return (dx,dy, ha, va)
      
     """Graph"""
-    def createLine(self,line_data,start_pos=(0,0)):
+    def createLine(self,line_data):
         stations = line_data["station"]
         placeholder = line_data["placeholder"]
         color = line_data["color"]
@@ -97,7 +99,9 @@ class TubeMap():
         interchange = line_data["interchange"]
         namePlacement = line_data["placement"]
         nodeDistance = line_data["node_distance"]
+        start_pos = line_data["start"]
 
+        self.keys.append(line_data)
         station_dict = self.generateStationPos(placeholder, nodeDistance,directions,start_pos)
 
         self.addStationNode(station_dict,interchange,color)
@@ -112,10 +116,10 @@ class TubeMap():
         
     def Task_2(self):
         plt.figure(figsize= self.settings.figsize)
-        self.createLine(self.tubeSystem.piccadilly,(-1,-1))
-        self.createLine(self.tubeSystem.central,(12,2))
-        self.createLine(self.tubeSystem.jubilee,(-1,8))
-        self.createLine(self.tubeSystem.bakerloo,(-3,8))
+        self.createLine(self.tubeSystem.piccadilly)
+        self.createLine(self.tubeSystem.central)
+        self.createLine(self.tubeSystem.jubilee)
+        self.createLine(self.tubeSystem.bakerloo)
         
         self.drawTubeMap()
     
