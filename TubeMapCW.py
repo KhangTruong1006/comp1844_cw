@@ -15,20 +15,7 @@ class TubeMap():
         self.tubeGraph = nx.Graph()
 
     """Functions"""
-    def generateStationPos(self,placeholders,node_pos,directions,start_pos = (0,0)):
-        pos= {}
-        x, y = start_pos
-        for i, direction in enumerate(directions):
-            dx, dy = self.getOffsetAndAlignment(direction,node_pos[i],"direction")
-            x += dx
-            y += dy
-            pos[f'{placeholders[i]}'] = (x,y)
-
-        return pos
-
-    def createNode(self,name,pos,color = "blue", node_edge = "black"):
-        self.tubeGraph.add_node(name,npos = pos, ncl= color, nbc = node_edge)
-
+    # Add functions
     def addStationNode(self,line_data,interchange,color = "blue"):
         for i,station in enumerate(line_data):
             if interchange[i] != True:
@@ -41,39 +28,47 @@ class TubeMap():
         for i in range(len(stations) - 1):
             self.tubeGraph.add_edge(stations[i], stations[i+1], ecl=color,label = distance[i])
 
-    # Color generator functions
+    # Display functions
     def displayKeys(self):
         for line in self.tubeSystem.lines:
             plt.plot([], [], color=line["color"], linewidth=2, label=line["key"])
-    
-    def setLabelOffset(self,station,x,y,placement):
-        dx, dy, ha, va = self.getOffsetAndAlignment(placement)
-        x += dx * self.settings.label_x_offset
-        y += dy * self.settings.label_y_offset
-        self.pltTextStationName(x,y,station,ha,va)
-
-    # Others
-    def pltTextStationName(self,x,y,station,ha,va):
-        plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
-
+            
     def displayStationName(self,station_dict,names,placement):
         for i,(x,y) in enumerate(station_dict.values()):
             dx,dy, ha, va = self.getOffsetAndAlignment(placement[i],"placement",(x,y))
             x += dx * self.settings.label_x_offset
             y += dy * self.settings.label_y_offset
             self.pltTextStationName(x,y,names[i],ha,va)
+            
+    # Helper functions
+    def createNode(self,name,pos,color = "blue", node_edge = "black"):
+        self.tubeGraph.add_node(name,npos = pos, ncl= color, nbc = node_edge)
+        
+    def pltTextStationName(self,x,y,station,ha,va):
+        plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
+    
+    def generateStationPos(self,placeholders,node_pos,directions,start_pos = (0,0)):
+        pos= {}
+        x, y = start_pos
+        for i, direction in enumerate(directions):
+            dx, dy = self.getOffsetAndAlignment(direction,node_pos[i],"direction")
+            x += dx
+            y += dy
+            pos[f'{placeholders[i]}'] = (x,y)
 
-    def getOffsetAndAlignment(self,key,distance = 1,mode="direction",start_pos =(0,0)):
+        return pos
+     
+    def getOffsetAndAlignment(self,key,distance = 1,mode="direction",start_pos = (0,0)):
         if mode == "direction":
             directions = {
                 "N":  (0, 1),
                 "NE": (1, 1),
                 "E":  (1, 0),
-                "SE": (1, -1),
-                "S":  (0, -1),
-                "SW": (-1, -1),
-                "W":  (-1, 0),
-                "NW": (-1, 1)
+                "SE": (1,-1),
+                "S":  (0,-1),
+                "SW": (-1,-1),
+                "W":  (-1,0),
+                "NW": (-1,1)
             }
             dx, dy = directions.get(key,start_pos)
             return (dx * distance, dy * distance)
@@ -91,8 +86,7 @@ class TubeMap():
             }
             dx, dy, ha, va = offsets.get(key, (0,0,'center', 'center'))
             return (dx,dy, ha, va)
-            
-
+     
     """Graph"""
     def createLine(self,line_data,start_pos=(0,0)):
         stations = line_data["station"]
@@ -153,8 +147,8 @@ class TubeMap():
 if __name__ == '__main__':
     try: 
         run = TubeMap()
-        run.Task_1()
-        # run.Task_2()
+        # run.Task_1()
+        run.Task_2()
 
     except Exception as error:
         print(f"Error: {error}")
