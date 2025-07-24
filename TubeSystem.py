@@ -16,11 +16,11 @@ class TubeSystem:
             "Central",
             "red",
             (12,2),
-            [0,2,1,4,3,3,2,1,1,2],
+            [0,2,1,2,5,3,2,1,1,2],
             ["St Paul's","Chancery Lane","Holborn","Tottenham Court Road","Oxford Circus","Bond Street","Marble Arch","Lancaster Gate","Queensway","Notting Hill Gate"],
             [False,False,True,False,True,True,False,False,False,False],
             ["-","W","NW","W","W","W","SW","SW","SW","W"],
-            ["r","b","r","tr","tr","tl","tl","r","b","l"],
+            ["r","b","r","t","tr","tl","tl","r","b","l"],
             [1.03,0.63,0.7,0.81,0.49,0.65,1.2,0.83,0.63]
         )
 
