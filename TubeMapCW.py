@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -88,8 +87,10 @@ class TubeMap():
             }
             dx, dy, ha, va = offsets.get(key, (0,0,'center', 'center'))
             return (dx,dy, ha, va)
-     
-    """Graph"""
+    
+    # Task 3 function
+    
+    """Graph - Task 1 - 2"""
     def createLine(self,line_data):
         stations = line_data["station"]
         placeholder = line_data["placeholder"]
@@ -108,21 +109,6 @@ class TubeMap():
         self.addStationEdge(station_dict,distance,color)
         self.displayStationName(station_dict,stations,namePlacement)
 
-    def Task_1(self):
-        plt.figure(figsize= self.settings.figsize) 
-        self.createLine(self.tubeSystem.piccadilly)
-        
-        self.drawTubeMap()
-        
-    def Task_2(self):
-        plt.figure(figsize= self.settings.figsize)
-        self.createLine(self.tubeSystem.piccadilly)
-        self.createLine(self.tubeSystem.central)
-        self.createLine(self.tubeSystem.jubilee)
-        self.createLine(self.tubeSystem.bakerloo)
-        
-        self.drawTubeMap()
-    
     def drawTubeMap(self):
         pos = nx.get_node_attributes(self.tubeGraph,'npos')
         nodeColor = nx.get_node_attributes(self.tubeGraph, 'ncl')   # ncl - Node Color
@@ -148,11 +134,46 @@ class TubeMap():
         plt.legend(title = self.settings.legend_title,loc = self.settings.legend_location)
         plt.show()
 
+    def Task_1(self):
+        plt.figure(figsize= self.settings.figsize) 
+        self.createLine(self.tubeSystem.piccadilly)
+        
+        self.drawTubeMap()
+        
+    def Task_2(self):
+        plt.figure(figsize= self.settings.figsize)
+        
+        self.createLine(self.tubeSystem.bakerloo)
+        self.createLine(self.tubeSystem.central)
+        self.createLine(self.tubeSystem.jubilee)
+        self.createLine(self.tubeSystem.piccadilly)
+        
+        self.drawTubeMap()
+    
+    """Task 3"""
+    def calculateLength(self,line_data):
+        return np.sum(line_data["distance"])
+    
+    def Task_3(self):       
+        l1 = self.calculateLength(self.tubeSystem.bakerloo)
+        l2 = self.calculateLength(self.tubeSystem.central)
+        l3 = self.calculateLength(self.tubeSystem.jubilee)
+        l4 = self.calculateLength(self.tubeSystem.piccadilly)
+        
+        system = [l1,l2,l3,l4]
+        total_length = round(np.sum(system),2)
+        avg_distance = round(np.mean(system),2)
+        std = round(np.std(system),5)
+        
+        print(f'Total Length: {total_length}\nAverage Distance: {avg_distance}\nStandard Deviation: {std}')
+ 
+""" Testing """       
 if __name__ == '__main__':
     try: 
         run = TubeMap()
         # run.Task_1()
-        run.Task_2()
+        # run.Task_2()
+        # run.Task_3()
 
     except Exception as error:
         print(f"Error: {error}")
