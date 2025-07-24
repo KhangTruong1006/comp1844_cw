@@ -11,7 +11,9 @@ class Setting:
         self.node_label_enabled = False
 
         """Diagram Setting"""
-        self.figsize = (15,8) # Width - Height
+        width = 15
+        height = 8
+        self.figsize = (width,height) # Width - Height
 
         self.diagram_name = "London Underground Map"
         self.legend_title = "Key"
