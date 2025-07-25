@@ -165,7 +165,7 @@ class TubeMap():
         avg_distance = round(np.mean(system),2)
         std = round(np.std(system),5)
         
-        print(f'Total Length: {total_length}\nAverage Distance: {avg_distance}\nStandard Deviation: {std}')
+        print(f'Total Length: {total_length} km\nAverage Distance: {avg_distance} km\nStandard Deviation: {std}')
  
 """ Testing """       
 if __name__ == '__main__':
