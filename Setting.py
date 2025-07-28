@@ -15,7 +15,7 @@ class Setting:
         height = 8
         self.figsize = (width,height) # Width - Height
 
-        self.diagram_name = "London Underground Map"
+        self.diagram_name = "London Underground Map (Km)"
         self.legend_title = "Key"
         self.legend_location = "lower right"
 
