@@ -17,6 +17,7 @@ class TubeMap():
 
     """Functions"""
     # Add functions
+    # Create station node coordinate
     def addStationNode(self,line_data,interchange,color = "blue"):
         for i,station in enumerate(line_data):
             if interchange[i] != True:
@@ -24,16 +25,19 @@ class TubeMap():
             else:
                 self.createNode(station, line_data[station], self.settings.interchange_station_color)
     
+    # Create edges between station
     def addStationEdge(self,stationDict,distance = [], color = "blue"):
         stations = list(stationDict)
         for i in range(len(stations) - 1):
             self.tubeGraph.add_edge(stations[i], stations[i+1], ecl=color,label = distance[i])
 
     # Display functions
+    # Display all key names
     def displayKeys(self):
         for key in self.keys:
             plt.plot([], [], color=key["color"], linewidth=2, label=key["key"])
-            
+    
+    # Display station names
     def displayStationName(self,station_dict,names,placement):
         for i,(x,y) in enumerate(station_dict.values()):
             dx,dy, ha, va = self.getOffsetAndAlignment(placement[i],"placement",(x,y))
@@ -42,12 +46,15 @@ class TubeMap():
             self.pltTextStationName(x,y,names[i],ha,va)
             
     # Helper functions
+    # Generate node have attributes of coordinate/position - npos, node color - ncl, node border color - nbc
     def createNode(self,name,pos,color = "blue", node_edge = "black"):
         self.tubeGraph.add_node(name,npos = pos, ncl= color, nbc = node_edge)
-        
+    
+    # Display station name in specific location based on station node
     def pltTextStationName(self,x,y,station,ha,va):
         plt.text(x, y, station, ha= ha, va= va,fontsize = self.settings.fontSize)
     
+    # Generate a dictionary of line's coordinate of stations - Exp: {"Station A" : (0,0)}
     def generateStationPos(self,placeholders,node_pos,directions,start_pos = (0,0)):
         pos= {}
         x, y = start_pos
@@ -58,7 +65,9 @@ class TubeMap():
             pos[f'{placeholders[i]}'] = (x,y)
 
         return pos
-     
+    
+    # This is for generating Station Posistion based on previous station
+    # Also, generate coordinate of station name based on their node
     def getOffsetAndAlignment(self,key,distance = 1,mode="direction",start_pos = (0,0)):
         if mode == "direction":
             directions = {
@@ -87,10 +96,9 @@ class TubeMap():
             }
             dx, dy, ha, va = offsets.get(key, (0,0,'center', 'center'))
             return (dx,dy, ha, va)
-    
-    # Task 3 function
-    
+
     """Graph - Task 1 - 2"""
+    # Generate a line with all information
     def createLine(self,line_data):
         stations = line_data["station"]
         placeholder = line_data["placeholder"]
